@@ -6,7 +6,7 @@
 
 GitHub 仓库：[zhenglinniao/IT-2nd-Round-coding-Test](https://github.com/zhenglinniao/IT-2nd-Round-coding-Test)。评审者可从该仓库获取代码；运行及测试步骤见下文。
 
-本 README 包含安装运行、依赖、输入结构、实现范围、测评难点、API 失败与回退、占位图和运费假设。外部接口验证记录见 [接口研究记录](docs/research.md)，已完成的本地检查见 [验收记录](docs/validation.md)。GitHub Actions 配置已准备，远程运行结果须在推送后确认。
+本 README 包含安装运行、依赖、输入结构、实现范围、测评难点、API 失败与回退、占位图和运费假设。外部接口验证记录见 [接口研究记录](docs/research.md)，检查详情见 [验收记录](docs/validation.md)。代码已公开推送；首次 [GitHub Actions 远程验收](https://github.com/zhenglinniao/IT-2nd-Round-coding-Test/actions/runs/42332984210)已通过后端测试、前端测试、生产构建和浏览器测试。后续提交的结果以对应 Actions 运行为准。
 
 ## 实现情况
 

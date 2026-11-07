@@ -42,7 +42,7 @@ Windows 默认沙箱限制了异步测试的回环套接字及部分 Vite 文件
 - 原始 Australia Post 凭据：请求超时或 HTTP 401，没有成功的实际追踪结果。
 - HTML 更新凭据：用户明确授权后已通过官方 testbed 的六个只读测试，均为 HTTP 200、运单号匹配、六条事件。已更新本地配置；测试轨迹不代表实际运输记录，生产环境尚未验证。
 - TNT AU：公开页面追踪已接入；国内 UAT 凭据在专用 RTTNet 样例报价中验证成功，错误密码和无效地区对照符合预期。订单自动报价未接入，费用仍为 A$0.00；专用 Weblinking 追踪及生产 RTT 未验证。
-- 没有创建远程仓库、推送代码或公网部署，GitHub Actions 配置仅在本地准备，尚未在 GitHub 执行。
+- 2026-11-07 已按用户明确授权将题目客户信息原样保留，公开推送至 [GitHub 仓库](https://github.com/zhenglinniao/IT-2nd-Round-coding-Test)。提交 `aaef016` 的 [首次远程 CI](https://github.com/zhenglinniao/IT-2nd-Round-coding-Test/actions/runs/42332984210)已通过后端、前端、构建及浏览器检查。原题、整个 output、真实凭据及面试讲解未进入已发布历史；未部署公网应用。
 
 本地订单、匹配、计算、前端、运费估算与故障处理已验证，Australia Post / StarTrack 官方测试环境、TNT 公开追踪及专用 RTTNet UAT 样例报价可用；邮政生产环境、专用 Weblinking 追踪及生产 RTT 未验证。
 
