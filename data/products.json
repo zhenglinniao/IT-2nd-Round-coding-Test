@@ -1,0 +1,92 @@
+[
+  {
+    "sku": "HALGEO15",
+    "name": "The Geoffrey CBG 12% 15g",
+    "rrp": "110.00",
+    "weight_kg": "0.0680",
+    "width_cm": "7.60",
+    "length_cm": "7.60",
+    "height_cm": "7.80",
+    "volume_m3": "0.0004505280"
+  },
+  {
+    "sku": "MCBO30",
+    "name": "BOB 30 (Alien OG) THC 30% 10g",
+    "rrp": "99.00",
+    "weight_kg": "0.0590",
+    "width_cm": "7.60",
+    "length_cm": "7.60",
+    "height_cm": "7.90",
+    "volume_m3": "0.0004563040"
+  },
+  {
+    "sku": "MCMW10",
+    "name": "Maali Wind THC 25% 10g",
+    "rrp": "129.00",
+    "weight_kg": "0.0590",
+    "width_cm": "7.60",
+    "length_cm": "7.60",
+    "height_cm": "7.90",
+    "volume_m3": "0.0004563040"
+  },
+  {
+    "sku": "LELCBD100",
+    "name": "CBD 100 - Full Spectrum Certified Organic",
+    "rrp": "140.00",
+    "weight_kg": "0.0890",
+    "width_cm": "3.40",
+    "length_cm": "4.50",
+    "height_cm": "10.40",
+    "volume_m3": "0.0001591200"
+  },
+  {
+    "sku": "HARNIG",
+    "name": "Harbour LR Night Cartridge",
+    "rrp": "149.00",
+    "weight_kg": "0.0250",
+    "width_cm": "6.00",
+    "length_cm": "3.00",
+    "height_cm": "12.00",
+    "volume_m3": "0.0002160000"
+  },
+  {
+    "sku": "AURPUR10",
+    "name": "Purple Raine THC18% 15g",
+    "rrp": "99.00",
+    "weight_kg": "0.0680",
+    "width_cm": "7.60",
+    "length_cm": "7.60",
+    "height_cm": "7.80",
+    "volume_m3": "0.0004505280"
+  },
+  {
+    "sku": "TBAMET28",
+    "name": "Amethyst THC 25% 28G",
+    "rrp": "199.00",
+    "weight_kg": "0.0930",
+    "width_cm": "8.60",
+    "length_cm": "8.60",
+    "height_cm": "11.30",
+    "volume_m3": "0.0008357480"
+  },
+  {
+    "sku": "TBOPAL28",
+    "name": "Opal THC 23% 28G",
+    "rrp": "199.00",
+    "weight_kg": "0.0930",
+    "width_cm": "8.60",
+    "length_cm": "8.60",
+    "height_cm": "11.30",
+    "volume_m3": "0.0008357480"
+  },
+  {
+    "sku": "TBAMET10",
+    "name": "Amethyst THC 25% 10G",
+    "rrp": "99.00",
+    "weight_kg": "0.0560",
+    "width_cm": "6.70",
+    "length_cm": "6.70",
+    "height_cm": "10.40",
+    "volume_m3": "0.0004668560"
+  }
+]

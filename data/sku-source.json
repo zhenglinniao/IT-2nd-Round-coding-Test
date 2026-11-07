@@ -1,0 +1,18 @@
+{
+  "source": "Assessment SQL-like Sheet Query",
+  "retrieved_at": "2026-11-06",
+  "table": "product_list",
+  "query": "SELECT * FROM product_list WHERE SKU IN ('TBAMET10','TBAMET28','TBOPAL28','AURPUR10','HARNIG','LELCBD100','HALGEO15','MCMW10','MCBO30');",
+  "note": "以下为实际返回九行中与本项目有关的字段摘录，未包含无关描述和业务字段。单位保留原样。",
+  "rows": [
+    {"SKU":"HALGEO15","ProductName":"The Geoffrey CBG 12% 15g","RRP":"110.00","length":"76.0mm","width":"76.0mm","height":"78.0mm","volume":"450528.0mm³","weight":"68.0g"},
+    {"SKU":"MCBO30","ProductName":"BOB 30 (Alien OG) THC 30% 10g","RRP":"99.00","length":"76.0mm","width":"76.0mm","height":"79.0mm","volume":"456304.0mm³","weight":"59.0g"},
+    {"SKU":"MCMW10","ProductName":"Maali Wind THC 25% 10g ","RRP":"129.00","length":"76.0mm","width":"76.0mm","height":"79.0mm","volume":"456304.0mm³","weight":"59.0g"},
+    {"SKU":"LELCBD100","ProductName":"CBD 100 - Full Spectrum Certified Organic","RRP":"140.00","length":"45.0mm","width":"34.0mm","height":"104.0mm","volume":"159120.0mm³","weight":"89.0g"},
+    {"SKU":"HARNIG","ProductName":"Harbour LR Night Cartridge","RRP":"149.00","length":"30.0mm","width":"60.0mm","height":"120.0mm","volume":"216000.0mm³","weight":"25.0g"},
+    {"SKU":"AURPUR10","ProductName":"Purple Raine THC18% 15g","RRP":"99.00","length":"76.0mm","width":"76.0mm","height":"78.0mm","volume":"450528.0mm³","weight":"68.0g"},
+    {"SKU":"TBAMET28","ProductName":"Amethyst THC 25% 28G","RRP":"199.00","length":"86.0mm","width":"86.0mm","height":"113.0mm","volume":"835748.0mm³","weight":"93.0g"},
+    {"SKU":"TBOPAL28","ProductName":"Opal THC 23% 28G","RRP":"199.00","length":"86.0mm","width":"86.0mm","height":"113.0mm","volume":"835748.0mm³","weight":"93.0g"},
+    {"SKU":"TBAMET10","ProductName":"Amethyst THC 25% 10G","RRP":"99.00","length":"67.0mm","width":"67.0mm","height":"104.0mm","volume":"466856.0mm³","weight":"56.0g"}
+  ]
+}

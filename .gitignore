@@ -1,0 +1,20 @@
+# Supplied briefs contain private customer details and API credentials.
+/IT 2nd Round coding Test/
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+/tmp/
+/data/raw/
+/output/
+*.tsbuildinfo
+*.log
