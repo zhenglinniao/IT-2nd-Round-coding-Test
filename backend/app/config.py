@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -11,13 +11,18 @@ ROOT = Path(__file__).resolve().parents[2]
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path = ROOT / "data"
-    auspost_key: str = ""
-    auspost_secret: str = ""
-    startrack_account: str = ""
-    post_account: str = ""
+    auspost_key: str = field(default="", repr=False)
+    auspost_secret: str = field(default="", repr=False)
+    startrack_account: str = field(default="", repr=False)
+    post_account: str = field(default="", repr=False)
     auspost_base_url: str = "https://digitalapi.auspost.com.au/test/shipping/v1"
     shipping_enabled: bool = False
     tnt_enabled: bool = False
+    tnt_weblinking_username: str = field(default="", repr=False)
+    tnt_weblinking_password: str = field(default="", repr=False)
+    tnt_uat_username: str = field(default="", repr=False)
+    tnt_uat_password: str = field(default="", repr=False)
+    tnt_uat_account: str = field(default="", repr=False)
 
     def __post_init__(self):
         url = urlparse(self.auspost_base_url)
@@ -38,4 +43,9 @@ class Settings:
             auspost_base_url=os.getenv("AUSPOST_BASE_URL") or cls.auspost_base_url,
             shipping_enabled=os.getenv("SHIPPING_ESTIMATE_ENABLED", "").lower() == "true",
             tnt_enabled=os.getenv("TNT_TRACKING_ENABLED", "true").lower() == "true",
+            tnt_weblinking_username=os.getenv("TNT_WEBLINKING_USERNAME", ""),
+            tnt_weblinking_password=os.getenv("TNT_WEBLINKING_PASSWORD", ""),
+            tnt_uat_username=os.getenv("TNT_UAT_USERNAME", ""),
+            tnt_uat_password=os.getenv("TNT_UAT_PASSWORD", ""),
+            tnt_uat_account=os.getenv("TNT_UAT_ACCOUNT", ""),
         )

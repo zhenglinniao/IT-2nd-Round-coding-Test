@@ -21,7 +21,7 @@ GitHub 仓库：[zhenglinniao/IT-2nd-Round-coding-Test](https://github.com/zheng
 
 **接口验证：** 经用户明确授权，已使用 HTML 补充版的更新凭据接通 Australia Post / StarTrack 官方测试环境。两条订单运单和四条 FAQ 测试运单均返回 HTTP 200，并返回与请求一致的运单号。六次返回的事件内容和时间相同，页面明确标注为测试轨迹，不代表实际订单的运输记录。原 PDF 凭据曾返回 401，当前本地配置已切换为更新凭据。
 
-**TNT 追踪：** 已接入 TNT 澳大利亚官方公开查询页面，读取运单历史，无需账号密码。题目运单 `305506914` 实测返回六条事件，最后一条为 2025-12-04 13:00 已送达。官网未标注时区，保留日/月/年原文并说明。此适配依赖官方页面结构，页面变化会明确报错；附件 Weblinking 账号接口和 TNT 运费报价仍未实现，TNT 运费为 A$0.00。自动测试隔离外部网络，真实查询另行验收。详情见 [接口研究记录](docs/research.md)。
+**TNT：** 官方公开追踪已接入，题目运单 `305506914` 当前返回六条事件，最新为 2025-12-04 13:00 已送达；官网时间未标时区，保留原文。国内 UAT 凭据现已在专用 RTTNet 报价入口验证成功，样例包裹返回五项 AUD 报价，错误密码及无效地区对照分别返回 XML 码 `004`、`590`。专用 Weblinking 追踪凭据仍未确认，生产 RTT 未验证。样例报价不参与订单计费，TNT 运费仍为 A$0.00。详情见 [接口研究记录](docs/research.md)。
 
 ## 技术栈与依赖
 
@@ -86,13 +86,13 @@ Linux/macOS 使用 `python3 -m venv .venv`，Python 命令路径为 `.venv/bin/p
 | `AUSPOST_BASE_URL` | `https://digitalapi.auspost.com.au/test/shipping/v1` | 留空也使用默认值；生产基址为 `https://digitalapi.auspost.com.au/shipping/v1`，需相应权限。仅接受官方 HTTPS 主机及上述路径 |
 | `TNT_TRACKING_ENABLED` | `true` | 启用 TNT 官方公开追踪；`false` 或空值关闭，不影响其他承运商 |
 | `TNT_WEBLINKING_USERNAME` / `TNT_WEBLINKING_PASSWORD` | 空 | 附件的 Secured Weblinking 凭据，仅供服务端手动诊断；未验证专用追踪 API，不用于国内 UAT |
-| `TNT_UAT_USERNAME` / `TNT_UAT_PASSWORD` / `TNT_UAT_ACCOUNT` | 空 | 附件国内 UAT 的另一组凭据；手动诊断使用 UAT 官方主机，报价仍待正式协议 |
+| `TNT_UAT_USERNAME` / `TNT_UAT_PASSWORD` / `TNT_UAT_ACCOUNT` | 空 | 国内 UAT 凭据，已通过专用 RTTNet 样例报价验证；不能与 Weblinking 凭据混用 |
 | `SHIPPING_ESTIMATE_ENABLED` | `false` | 仅 `true` 启用题目公式估算；`false` 或空值关闭 |
 | `DATA_DIR` | 项目根目录下的 `data` | 留空也使用默认目录；自定义目录需含 `orders.json` 和 `products.json`，建议绝对路径 |
 
 TNT 公开追踪默认启用，可用 `TNT_TRACKING_ENABLED=false` 关闭；仅支持 9 位数字的国内运单号。TNT 不使用 Australia Post 凭据，也不需要填写附件中的 TNT 密码。修改数据文件或服务器环境变量后需要重启后端；前端资源变更后重新构建。
 
-两组 TNT 凭据现支持通过上述五个环境变量在服务器端加载，配置对象的字符串表示隐藏凭据。它们不提供给前端，也不自动用于公开追踪；填入变量不等于专用账户接口已接通。手动核验命令见下方，只有执行命令才会向对应门户提交凭据。
+两组 TNT 凭据通过上述五个环境变量在服务器端加载，配置对象的字符串表示隐藏凭据。它们不提供给前端，也不自动用于公开追踪。手动核验命令见下方：门户检查与 RTT UAT 报价使用不同命令、不同协议，不以门户登录结果判断专用 API 是否可用。
 
 布尔开关不区分大小写，但只有 `true` 表示开启，`1`、`yes` 等值不生效。示例中的运费开关为 `false`，TNT 开关为 `true`。如需完全不访问外部物流，可清空邮政凭据并设置 `TNT_TRACKING_ENABLED=false`。
 
@@ -213,7 +213,7 @@ WHERE SKU IN ('TBAMET10','TBAMET28','TBOPAL28','AURPUR10',
 
 公式对 StarTrack / Australia Post 使用相同的演示参数，不调用承运商实时费率。包裹沿用输入文件的划分，不进行装箱优化或自动拆包；每个包裹仅收一次基础费、一次跨州费。计费重量在包裹汇总后向上取整到整公斤，不对每件商品分别进位。体积优先采用有效 `volume_m3`，否则用完整长宽高计算；所有尺寸和重量均为单件数据，按明细数量累计。不另计燃油、保险、签名、重派、偏远地区或最低消费等附加费用。
 
-缺商品/重量/体积时该包裹为 A$0.00；TNT 报价未实现，费用也为 A$0.00（追踪查询已接入）。订单可能包含部分估算加部分零费用，页面展开说明会列明每个包裹的计算方式，不表示完整最终承运商费用。
+缺商品/重量/体积时该包裹为 A$0.00；TNT 订单报价尚未自动接入，费用也为 A$0.00（公开追踪及独立 RTT UAT 样例报价已验证）。样例包裹、服务选择与报价税额口径尚不能代替订单真实运费，不将样例最低价直接计入订单。订单可能包含部分估算加部分零费用，不表示完整最终承运商费用。
 
 关闭估算时全部包裹按 A$0.00 展示；追踪接口成功或失败均不改变公式估算结果。金额完整与运费完整是两个概念：商品金额可完整，而订单仍含回退为零的运费包裹。API 的 `shipping.complete` 只有全部包裹均成功采用公式时才为 `true`，不能把回退零费用理解为承运商免运费。
 
@@ -261,7 +261,7 @@ WHERE SKU IN ('TBAMET10','TBAMET28','TBOPAL28','AURPUR10',
 
 邮政事件的 `date` 和 `last_update` 仅接受带时区的 ISO 时间。TNT 官网未标时区，以上字段为 `null`，通过事件的 `date_text` 和包裹的 `last_update_text` 保留 `04/12/2025 13:00` 这样的日/月/年时间，不自行转换时区。
 
-TNT 适配器只执行官方查询和历史详情操作，校验运单号、历史表头及跳转目标；不根据摘要页的固定进度标签推断送达状态。官方页面结构变化时返回明确错误。TNT 账户 Weblinking API、RTT 运费报价、制单、标签打印和订阅通知均未接入。
+TNT 公开追踪适配器只执行查询和历史详情操作，校验运单号、历史表头及跳转目标；不根据摘要页的固定进度标签推断送达。另有独立 RTT UAT 样例报价验证器。专用 Weblinking 追踪、订单自动报价、制单、标签打印和订阅通知均未接入。
 
 ## 测试
 
@@ -288,7 +288,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-后端 95 项测试已通过，包含新增的凭据配置和门户诊断检查；此前 9 项前端测试、6 项端到端测试及生产构建均通过，本次未修改界面。后端覆盖金额、舍入、无效输入、SKU 缺失、订单隔离、单位转换、运费和快递错误，以及 TNT 表单流程、历史排序、无时区时间保留、运单匹配、跳转限制与缓存。前端和端到端覆盖切换、搜索、空/错误状态、刷新恢复、TNT 中文事件与原始时间、未知订单恢复及手机宽度。完整结果见 [验收记录](docs/validation.md)。
+后端 117 项测试已通过，包括 RTT 双重编码、XML 报价、认证错误、业务校验、非法 XML、异常价格及跳转限制；此前 9 项前端测试、6 项端到端测试及生产构建均通过，本次未修改界面或订单计费。其余覆盖金额、舍入、输入校验、数据隔离、单位转换、运费、物流故障、缓存及门户诊断。完整结果见 [验收记录](docs/validation.md)。
 
 真实物流烟雾检查在项目根目录运行，会遍历订单中的三个包裹。邮政需有效凭据，TNT 需开关为 `true`；该命令访问实际外部服务，不属于离线自动测试。输出仅包含规范化状态、查询来源和时间等摘要，不打印凭据或原始响应。TNT 因官网未标时区，输出的 `last_update` 为空，可在页面查看原始事件时间。
 
@@ -305,7 +305,18 @@ TNT 账号的手动诊断（在根目录运行，访问外部网络，自动测�
 
 此命令只核验两组凭据与 TNT Online 门户的兼容性，**不是专用 Weblinking 或 RTT API 验证**。它读取防伪令牌后 POST 到固定官方 HTTPS 登录地址，两组使用独立会话，不跟随跳转、不创建运单、不自动重试，只输出脱敏结果。`portal_rejected` 表示门户拒绝，不能断言专用 API 凭据失效；`authentication_unconfirmed` 表示未获得认证成功证据；所有结果的 `account_api_verified` 均为 `false`。未配置时不发送请求。
 
-2026-11-07 进一步核验：旧版 RTT `/Rtt/inputRequest.asp` 在生产与 UAT 均返回 HTTP 404；旧登录地址跳转到新版门户，不能将 HTTP 302 当作成功。两组凭据均在对应新版门户中收到“用户名或密码无效”提示；UAT 此前也出现过连接错误。门户拒绝不等于专用 API 凭据失效。还缺少与这两组凭据匹配的正式 Weblinking 请求协议和有效 RTT 地址，因此账户追踪及报价仍未完成；公开页面追踪继续独立使用。
+2026-11-07 专用 API 复核已纠正先前判断：旧 `.asp` 地址的 GET 404 和门户拒绝都不足以判断 RTT 可用性。正确的 UAT 报价入口为 `https://uat.tntexpress.com.au/rttnet/inputrequest.aspx`，使用表单 POST：`Username`、`Password`、`Version=2`、`XMLRequest`。XMLRequest 先 URL 编码，再由表单编码一次；密码不进入 URL。
+
+```powershell
+# 日期按实际验证时间更新，建议选择未来工作日。
+.\.venv\Scripts\python.exe -m backend.tnt_diagnostics --service rtt --shipping-date 2026-11-09
+# 可选对照：共三次只读报价请求，包含一次故意错误密码、一次无效地区。
+.\.venv\Scripts\python.exe -m backend.tnt_diagnostics --service rtt --shipping-date 2026-11-09 --rtt-controls
+```
+
+样例为 `GLADESVILLE NSW 2111 → FITZROY VIC 3065`，一件、1 kg、10×10×10 cm、非危险品、寄件方付款。验证时返回五种 AUD 报价；错误密码在 HTTP 200 中返回 XML 码 `004`，把寄件区改为 `RYDE/2111` 返回业务校验码 `590`。因此不能只看 HTTP 状态判断成功。题目中的 Ryde/2111 组合需业务确认，不能无说明地用于实时下单。此命令不创建运单、不选择订单服务、不更新金额；RTT URL 固定为官方 UAT，不向生产环境发送 UAT 凭据。
+
+当前可确认国内 UAT 账号和 RTT 样例报价可用；专用 Weblinking 追踪凭据仍未验证，生产报价也未验证。公开追踪独立可用。复核详情及结果矩阵见 [接口研究记录](docs/research.md)。
 
 ## 常见问题
 
@@ -328,7 +339,8 @@ backend/app/tnt.py           TNT 官方公开追踪适配器
 backend/tests/               后端测试
 backend/import_products.py   商品导入工具
 backend/smoke_tracking.py    真实物流只读烟雾检查
-backend/tnt_diagnostics.py   两组 TNT 凭据的手动门户兼容性诊断（非账户 API）
+backend/tnt_diagnostics.py   门户兼容性诊断与独立 RTT UAT 样例报价验证
+backend/app/tnt_rtt.py       专用 RTTNet UAT 只读样例报价与 XML 校验
 frontend/src/                中文 React 界面
 frontend/e2e/                隔离的端到端测试
 data/                       订单、商品及商品来源摘录
