@@ -8,6 +8,30 @@ GitHub 仓库：[zhenglinniao/IT-2nd-Round-coding-Test](https://github.com/zheng
 
 本 README 包含安装运行、依赖、输入结构、实现范围、测评难点、API 失败与回退、占位图和运费假设。外部接口验证记录见 [接口研究记录](docs/research.md)，检查详情见 [验收记录](docs/validation.md)。代码已公开推送；首次 [GitHub Actions 远程验收](https://github.com/zhenglinniao/IT-2nd-Round-coding-Test/actions/runs/42332984210)已通过后端测试、前端测试、生产构建和浏览器测试。后续提交的结果以对应 Actions 运行为准。
 
+## 当前项目运行截图
+
+以下为 2026-11-07 在本机实际启动当前项目后，由浏览器直接捕获的页面，未注入模拟物流响应。截图已开启自拟公式运费估算；商品图片为占位图。StarTrack 显示的是官方测试环境返回的轨迹，页面保留测试提示，不能作为订单实际送达证明；TNT 使用官方公开追踪结果。客户信息按题目原样展示。
+
+### 桌面：订单、商品与金额
+
+第一张订单，展示订单列表、五条商品明细、GST、舍入调整、运费估算及收货信息。
+
+![桌面运行截图：订单商品、金额计算和 StarTrack 测试轨迹](docs/images/order-desktop.png)
+
+### 桌面：StarTrack 与 TNT 多包裹追踪
+
+第二张订单，展示四条商品明细与两个独立包裹；订单状态和每个包裹的物流状态分别显示。
+
+![桌面运行截图：第二张订单及 StarTrack、TNT 两个包裹](docs/images/multi-parcel-desktop.png)
+
+### 手机：390 × 844 视口
+
+手机宽度下的页面顶部；向下滚动可继续查看商品、金额与物流。较宽商品表格在自身容器内横向滚动。
+
+<img src="docs/images/order-mobile.png" alt="手机运行截图：390 像素宽度下的订单列表与详情" width="390">
+
+展示图片单独保存在 `docs/images/`，供 GitHub README 使用；整个 `output/` 仍被忽略，原始截图、翻译与面试讲解不会随该目录上传。截图反映捕获时状态，后续外部查询结果可能变化。
+
 ## 实现情况
 
 - 两张原题订单、九条商品明细、三个包裹，订单列表支持搜索和切换。
