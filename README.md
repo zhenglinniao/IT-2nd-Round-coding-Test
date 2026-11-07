@@ -164,7 +164,7 @@ Vite 将 `/api` 代理到本机 8000 端口；后端改用其他端口时需同�
 | `TNT_TRACKING_ENABLED` | `true` | 启用 TNT 官方公开追踪；`false` 或空值关闭，不影响其他承运商 |
 | `TNT_WEBLINKING_USERNAME` / `TNT_WEBLINKING_PASSWORD` | 空 | 附件的 Secured Weblinking 凭据，仅供服务端手动诊断；未验证专用追踪 API，不用于国内 UAT |
 | `TNT_UAT_USERNAME` / `TNT_UAT_PASSWORD` / `TNT_UAT_ACCOUNT` | 空 | 国内 UAT 凭据，已通过专用 RTTNet 样例报价验证；不能与 Weblinking 凭据混用 |
-| `SHIPPING_ESTIMATE_ENABLED` | `false` | 仅 `true` 启用题目公式估算；`false` 或空值关闭 |
+| `SHIPPING_ESTIMATE_ENABLED` | `false` | 仅 `true` 启用本项目自拟的演示运费公式；`false` 或空值关闭 |
 | `DATA_DIR` | 项目根目录下的 `data` | 留空也使用默认目录；自定义目录需含 `orders.json` 和 `products.json`，建议绝对路径 |
 
 TNT 公开追踪默认启用，可用 `TNT_TRACKING_ENABLED=false` 关闭；仅支持 9 位数字的国内运单号。TNT 不使用 Australia Post 凭据，也不需要填写附件中的 TNT 密码。修改数据文件或服务器环境变量后需要重启后端；前端资源变更后重新构建。
@@ -276,7 +276,7 @@ WHERE SKU IN ('TBAMET10','TBAMET28','TBOPAL28','AURPUR10',
 
 ## 运费估算边界
 
-使用可解释的题目示例公式，并非快递公司报价：
+原始 `2026-06-IT-Interview-in-person.pdf` 第 3 页第 4 节“Shipment Fee (Bonus)”允许使用运费 API，或基于重量和体积自行制定合理假设/公式，并在 README 解释；未完成时可显示 A$0.00。**原题没有提供具体费率公式。** 以下是本项目自行设定的演示估算：基础费 A$8、每公斤 A$1.50、跨州附加费 A$5 和体积系数 250 都是实施假设，不是题目指定数值，也不是承运商真实费率。
 
 ```text
 包裹实际重量 = Σ(单件 kg × 数量)
@@ -286,7 +286,7 @@ WHERE SKU IN ('TBAMET10','TBAMET28','TBOPAL28','AURPUR10',
 订单运费 = 包裹费用之和
 ```
 
-发件邮编固定为题目指定的 2111，发件州 NSW，目的邮编来自订单。当前公式只区分是否跨州，不根据邮编距离或偏远地区计算附加费。假设商品可合并装入对应包裹，不另加包装重量或空隙；体积系数 250 是示例假设。运费视为题目公式中的最终费用，未额外计算运费税。
+发件邮编固定为题目指定的 2111，发件州 NSW，目的邮编来自订单。当前自拟公式只区分是否跨州，不根据邮编距离或偏远地区计算附加费。假设商品可合并装入对应包裹，不另加包装重量或空隙；体积系数 250 也是本项目的演示假设。公式结果作为本项目展示的运费金额，未额外计算运费税。
 
 公式对 StarTrack / Australia Post 使用相同的演示参数，不调用承运商实时费率。包裹沿用输入文件的划分，不进行装箱优化或自动拆包；每个包裹仅收一次基础费、一次跨州费。计费重量在包裹汇总后向上取整到整公斤，不对每件商品分别进位。体积优先采用有效 `volume_m3`，否则用完整长宽高计算；所有尺寸和重量均为单件数据，按明细数量累计。不另计燃油、保险、签名、重派、偏远地区或最低消费等附加费用。
 
