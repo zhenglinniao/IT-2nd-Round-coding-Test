@@ -38,41 +38,118 @@ Node.js 要求 22.12+，已使用 Node.js 24 进行验收。首次安装后端�
 
 ## 本地启动
 
-需要 Python 3.12 和 Node.js 22.12+（本次使用 Node.js 24 验证）。在项目根目录执行：
+需要 Python 3.12 和 Node.js 22.12+（本次使用 Node.js 24 验证）。先将终端工作目录切换到克隆后的项目根目录，即同时包含 `README.md`、`backend` 和 `frontend` 的目录。Windows 的 PowerShell、命令提示符（cmd）和 macOS/Linux 的 Bash/Zsh 使用不同语法，请选择对应小节，不要混用。
+
+验证范围：Windows 已在本机运行，Linux 已通过 GitHub Actions 的安装、测试和构建；macOS 提供对应路径及 Shell 命令，尚未做真机验收。WSL 按 Linux 处理，使用独立的 Linux 虚拟环境，不复用 Windows 的 `.venv`；Windows Git Bash 不等于 WSL，本文 Windows 用户优先选择 PowerShell 或 cmd。
+
+**首次安装与日常启动是两件事。** 创建虚拟环境、安装依赖和复制配置通常只需做一次；新电脑、重新克隆或依赖锁定文件更新后需要重新安装对应依赖。已有 `.env` 时保留账号配置。下面均直接调用虚拟环境中的 Python，不需要先执行 `Activate.ps1` 或激活环境。
+
+### Windows：PowerShell / VS Code 的 PowerShell 终端
+
+首次安装，在项目根目录逐行执行：
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-lock.txt
 cd frontend
-npm ci
+npm.cmd ci
 cd ..
 if (!(Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
-编辑 `.env`，填入有效的 Australia Post / StarTrack 测试凭据。留空时仅对应承运商显示未配置，订单、商品和计算仍可使用；TNT 默认独立启用，可直接查询题目的国内运单。已有 `.env` 时保留文件并按配置表补充需要的变量，不要用示例覆盖账号。
+如果 `python` 命令不可用，但已经安装 Windows Python Launcher，可将第一行改为 `py -3.12 -m venv .venv`。Python 和 Node.js 安装后需能从当前终端找到，修改 PATH 后重新打开终端。
 
-运费估算是可选项，示例配置默认为 `false`。设 `SHIPPING_ESTIMATE_ENABLED=true` 可复现下方含运费的演示总额；关闭时两张订单总额分别为 A$2,131.00 和 A$1,655.00。本次本地演示已开启。
+日常启动，回到项目根目录后执行下面的通用方式：
+
+```powershell
+cd frontend
+npm.cmd run build
+cd ..
+.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+PowerShell 执行 `npm` / `npx` 时可能优先选择 `npm.ps1` / `npx.ps1`，被脚本执行策略拦截，出现 `PSSecurityException`、`UnauthorizedAccess` 或“在此系统上禁止运行脚本”。因此本 README 的 Windows 命令显式使用 `npm.cmd` / `npx.cmd`。上面的直接启动方式也不执行 `.ps1` 文件，适用于 `start.ps1` 被拦截的情况。
+
+如果当前 PowerShell 已允许执行本地脚本，也可以用快捷方式代替上面的日常启动命令：
 
 ```powershell
 .\scripts\start.ps1
 ```
 
-访问 [本地应用](http://127.0.0.1:8000) 和 [API 文档](http://127.0.0.1:8000/docs)。启动脚本会先构建前端，然后由 FastAPI 同源提供页面和 API。停止时按 Ctrl+C。
+该脚本内部使用 `npm.cmd`，先构建前端再启动后端，但不会安装依赖。若脚本仍被执行策略拦截，使用前面的通用方式即可。
 
-8000 端口被其他服务占用时，可执行 `.\scripts\start.ps1 -Port 8002`，随后访问 `http://127.0.0.1:8002`。脚本不会自动安装依赖，首次运行需完成上面的安装步骤。
+### Windows：命令提示符（cmd）
 
-也可分开执行：
+在终端选择“命令提示符”，或打开 cmd 后进入项目根目录。首次安装：
 
-```powershell
+```bat
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r backend\requirements-lock.txt
+cd frontend
+npm.cmd ci
+cd ..
+if not exist .env copy .env.example .env
+```
+
+日常启动，在项目根目录执行：
+
+```bat
+cd frontend
+npm.cmd run build
+cd ..
+.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+cmd 不使用 PowerShell 的 `Test-Path`、`Copy-Item` 或 `$env:` 语法，也不直接运行 `start.ps1`。
+
+### macOS / Linux：Bash 或 Zsh
+
+确认 `python3 --version` 对应所需 Python 版本，`node --version` 满足 Node.js 要求。首次安装，在项目根目录执行：
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r backend/requirements-lock.txt
+cd frontend
+npm ci
+cd ..
+if [ ! -f .env ]; then cp .env.example .env; fi
+```
+
+日常启动，在项目根目录执行：
+
+```bash
 cd frontend
 npm run build
 cd ..
-.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+.venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Linux/macOS 使用 `python3 -m venv .venv`，Python 命令路径为 `.venv/bin/python`；使用 `cp .env.example .env` 创建配置，并按上面的手动构建和 uvicorn 方式启动，PowerShell 启动脚本用于 Windows。已有 `.env` 时跳过复制。
+macOS/Linux 使用 `npm`、`npx` 和 `.venv/bin/python`；不使用 Windows 的 `.cmd`、`Scripts\python.exe` 或 PowerShell 启动脚本。若 Linux 创建虚拟环境时提示缺少 `venv` / `ensurepip`，需先安装发行版中对应 Python 版本的 venv 组件，再重试。
 
-前端开发时，在一个终端运行后端，在另一个终端进入 `frontend` 后执行 `npm run dev`，访问 Vite 输出的地址（通常为 `http://127.0.0.1:5173`）。Vite 将 `/api` 代理到本机 8000 端口；后端改用其他端口时需同步修改 `frontend/vite.config.ts` 中的代理地址。
+### 配置、访问地址与端口
+
+首次安装后编辑 `.env`，填入有效的 Australia Post / StarTrack 测试凭据。留空时仅对应承运商显示未配置，订单、商品和计算仍可使用；TNT 公开追踪默认独立启用。已有 `.env` 时按配置表补充所需变量，不要用示例覆盖账号。
+
+运费估算是可选项，示例默认为 `false`。设 `SHIPPING_ESTIMATE_ENABLED=true` 可复现下方含运费的演示总额；关闭时两张订单总额分别为 A$2,131.00 和 A$1,655.00。本次本地演示已开启。
+
+启动后访问 [本地应用](http://127.0.0.1:8000) 和 [API 文档](http://127.0.0.1:8000/docs)。FastAPI 同源提供构建后的页面和 API，保持终端运行，按 Ctrl+C 停止。
+
+若 8000 端口被占用，将 uvicorn 命令末尾改为 `--port 8002`，然后访问 `http://127.0.0.1:8002`。允许执行脚本的 Windows PowerShell 也可以用 `.\scripts\start.ps1 -Port 8002`。修改前端后需重新构建；仅重启未改动的项目时，可以直接运行对应系统的 uvicorn 命令，复用已有构建。
+
+### 前端开发模式
+
+先在一个终端启动后端。另开一个终端，在项目根目录进入 `frontend` 后启动 Vite：
+
+Windows PowerShell 或 cmd：
+
+```powershell
+cd frontend
+npm.cmd run dev
+```
+
+macOS/Linux 在 `frontend` 目录执行 `npm run dev`。访问 Vite 输出的地址（通常为 `http://127.0.0.1:5173`），该模式支持前端热更新。
+
+Vite 将 `/api` 代理到本机 8000 端口；后端改用其他端口时需同步修改 `frontend/vite.config.ts` 中的代理地址。此开发模式与前面构建后由 FastAPI 提供页面的方式分别使用，不需要同时执行 `npm run preview`。
 
 ## 配置
 
@@ -265,28 +342,53 @@ TNT 公开追踪适配器只执行查询和历史详情操作，校验运单号�
 
 ## 测试
 
+Windows PowerShell，在项目根目录执行：
+
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 cd frontend
-npm test
-npm run build
+npm.cmd test
+npm.cmd run build
 ```
 
-以上前端命令在 `frontend` 目录运行。端到端测试使用独立 8001 端口，强制清空邮政凭据、关闭 TNT 外部查询并启用公式运费；部分用例在浏览器内注入隔离的模拟轨迹，不访问真实物流。先构建前端，确保 8001 端口空闲，再运行：
+执行后位于 `frontend` 目录。端到端测试使用独立 8001 端口，强制清空邮政凭据、关闭 TNT 外部查询并启用公式运费；部分用例在浏览器内注入隔离的模拟轨迹，不访问真实物流。先构建前端，确保 8001 端口空闲，再选择对应终端运行：
 
 ```powershell
 # 使用已安装的 Microsoft Edge，无需额外浏览器下载
 $env:PLAYWRIGHT_CHANNEL = 'msedge'
-npm run test:e2e
+npm.cmd run test:e2e
 ```
 
-没有 Edge 时可安装 Playwright 自带 Chromium 后使用默认通道：
+Windows cmd 同样使用 `.venv\Scripts\python.exe`、`npm.cmd` 和 `npx.cmd`；若选择已安装 Edge，在 `frontend` 目录设置环境变量时改用 cmd 语法：
+
+```bat
+set "PLAYWRIGHT_CHANNEL=msedge"
+npm.cmd run test:e2e
+```
+
+Windows PowerShell 没有 Edge 时，可安装 Playwright 自带 Chromium 后使用默认通道，在 `frontend` 目录运行：
 
 ```powershell
 Remove-Item Env:PLAYWRIGHT_CHANNEL -ErrorAction SilentlyContinue
+npx.cmd playwright install chromium
+npm.cmd run test:e2e
+```
+
+cmd 对应的清除变量命令为 `set "PLAYWRIGHT_CHANNEL="`，随后执行 `npx.cmd playwright install chromium` 和 `npm.cmd run test:e2e`。
+
+macOS/Linux 的 Bash/Zsh，在项目根目录执行：
+
+```bash
+.venv/bin/python -m pytest
+cd frontend
+npm test
+npm run build
+unset PLAYWRIGHT_CHANNEL
 npx playwright install chromium
 npm run test:e2e
 ```
+
+Linux 若缺少 Chromium 的系统依赖，可将安装浏览器一行替换为 `npx playwright install --with-deps chromium`（可能需要系统包安装权限，GitHub Actions 使用此方式）。自动测试不需要真实快递凭据。以下商品导入、烟雾检查和 TNT 诊断示例中的 Windows Python 路径，在 macOS/Linux 均替换为 `.venv/bin/python`，并从项目根目录执行。
 
 后端 117 项测试已通过，包括 RTT 双重编码、XML 报价、认证错误、业务校验、非法 XML、异常价格及跳转限制；此前 9 项前端测试、6 项端到端测试及生产构建均通过，本次未修改界面或订单计费。其余覆盖金额、舍入、输入校验、数据隔离、单位转换、运费、物流故障、缓存及门户诊断。完整结果见 [验收记录](docs/validation.md)。
 
@@ -322,6 +424,9 @@ TNT 账号的手动诊断（在根目录运行，访问外部网络，自动测�
 
 | 现象 | 排查方式 |
 | --- | --- |
+| PowerShell 执行 npm / npx 提示禁止运行脚本 | 使用 `npm.cmd` / `npx.cmd`，显式调用 Windows 命令版本，避免命中 `npm.ps1` / `npx.ps1` |
+| `start.ps1` 提示 `PSSecurityException` 或 `UnauthorizedAccess` | 使用“Windows：PowerShell”小节中的 `npm.cmd run build` 和虚拟环境 Python 直接启动方式 |
+| 无法运行 `Activate.ps1` | 本文命令不需要激活虚拟环境，直接运行 `.\.venv\Scripts\python.exe`；macOS/Linux 使用 `.venv/bin/python` |
 | StarTrack 提示 HTTP 401 / 403 | 检查 API Key、Secret、对应 Account-Number 及测试/生产环境是否匹配；账号保留前导零。更新配置后重启服务 |
 | TNT 显示未启用 | 将 `TNT_TRACKING_ENABLED` 设为 `true` 并重启；同时检查当前终端是否有同名环境变量覆盖 `.env` |
 | TNT 查询格式异常 | 可能是官网页面变化或运单结果不匹配；查看查询提示，不将固定进度标签作为真实状态 |
